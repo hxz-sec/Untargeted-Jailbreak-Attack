@@ -5,9 +5,11 @@
 
 Existing gradient-based jailbreak attacks on Large Language Models (LLMs),such as Greedy Coordinate Gradient (GCG) and COLD-Attack, typically optimizeadversarial sufixes to align the LLM output with a predefined target responseHowever, by restricting the optimization objective as inducing a predefined target.these methods inherently constrain the adversarial search space, which limit theiroverall attack effcacy. Furthermore, existing methods typically require a largenumber of optimization iterations to fulfll the large gap between the fixed targetand the original model response, resulting in low attack effciency.To overcome the limitations of targeted jailbreak attacks, we propose the firstgradient-based untargeted jailbreak attack (UJA), aiming to elicit an unsafe re-sponse without enforcing any predefined patterns. Specifcally, we formulatean untargeted attack objective to maximize the unsafety probability of the LLMresponse, which can be quantified using a judge model. Since the objective isnon-differentiable, we further decompose it into two differentiable sub-objectivesfor optimizing an optimal harmful response and the corresponding adversarialprompt, with a theoretical analysis to validate the decomposition. In contrast totargeted jailbreak attacks, UJA's unrestricted objective significantly expands thesearch space, enabling a more flexible and effcient exploration ofLLM vulnera-bilities. Extensive evaluations demonstrate that UJA can achieve over 80% attacksuccess rates against recent safety-aligned LLMs with only 100 optimization itera-tions, outperforming the state-of-the-art gradient-based attacks such as I-GCG andCOLD-Attack by over 20%.
 
-![alt text](figs/image-3.png)
+**Figure 1.** Jailbreak example.  
+![Jailbreak example](figs/image-3.png)
 
-![alt text](figs/image-2.png)
+**Figure 2.** Workflow of UJA framework.  
+![Workflow](figs/workflow-2_Page1_Image1.jpg)
 
 ## Quick Start
 
@@ -60,7 +62,7 @@ Additionally, in order to evaluate the harmfulness of generated responses, we em
 | Model Name             | Link                                                       |
 |------------------------|------------------------------------------------------------|
 | GPTFuzzer              | https://huggingface.co/hubert233/GPTFuzz                   |
-| Llama-Guard-3-8B       | https://huggingface.co/cais/HarmBench-Llama-2-13b-cls      |
+| HarmBench-Llama-2-13b-cls       | https://huggingface.co/cais/HarmBench-Llama-2-13b-cls      |
 
 
 
@@ -113,33 +115,42 @@ python plot/response_diversity.py
 ### Result
 Here we demonstrate the effectiveness of UJA compared to the baseline. The detailed results are shown in the following table：
 
-| Dataset   | Model    | GCG-G | GCG-H | COLD-G | COLD-H | DRL-G | DRL-H | PAP-G | PAP-H | AdvPrefix-G | AdvPrefix-H | I-GCG-G | I-GCG-H | llm-adaptive-G | llm-adaptive-H | Ours-G | Ours-H |
-|-----------|----------|-------|-------|--------|--------|-------|-------|-------|-------|-------------|-------------|---------|---------|----------------|----------------|--------|--------|
-| AdvBench  | Llama-3  | 50    | 40    | 52     | 44     | 30    | 28    | 21    | 62    | 40          | 15          | 23      | 11      | 51             | 0             |**89**  | **67** |
-|           | Llama-3.1| 51    | 42    | 57     | 47     | 25    | 45    | 31    | 77    | 42          | 22          | 23      | 13      | 60             | 1             |**86**  | **80** |
-|           | Qwen-2.5 | 31    | 37    | 28     | 35     | 36    | 64    | 41    | 82    | 28          | 36          | 8       | 10      | 29             | 32            |**74**  | **55** |
-|           | Qwen-3   | 30    | 15    | 54     | 27     | 24    | 42    | 14    | 74    | 29          | 12          | 12      | 2       | 62             | 6             |**59**  | **33** |
-|           | Vicuna   | 28    | 21    | 52     | 40     | 29    | 27    | 2     | 3     | 41          | 17          | 25      | 5       | 41             | 1             |**88**  | **59** |
-|           | Mistral  | 70    | 81    | 72     | 73     | 34    | 94    | 38    | 84    | 66          | 65          | 38      | 38      | 44             | 46            |**88**  | **85** |
-| **Avg.**  | AdvBench | 43.3  | 39.3  | 52.5   | 44.3   | 29.7  | 50.0  | 24.5  | 63.7  | 41.0        | 27.8        | 21.5    | 13.2    | 47.8           | 14.3             |**80.7**|**63.2**|
-| HarmBench | Llama-3  | 22    | 40    | 38     | 41     | 33    | 44    | 16    | 64    | 43          | 20          | 13      | 4       | 37             | 7             |**65**  | **73** |
-|           | Llama-3.1| 31    | 50    | 43     | 44     | 35    | 37    | 19    | 71    | 44          | 24          | 16      | 9       | 35             | 3             |**47**  | **62** |
-|           | Qwen-2.5 | 24    | 53    | 32     | 51     | 41    | 78    | 33    | 84    | 29          | 36          | 17      | 19      | 16             | 31            | **64** | **66** |
-|           | Qwen-3   | 18    | 19    | 36     | 24     | 22    | 39    | 10    | 76    | 25          | 6           | 8       | 5       | 41             | 2             |**56**  | **29** |
-|           | Vicuna   | 22    | 12    | 39     | 27     | 30    | 55    | 1     | 3     | 36          | 16          | 17      | 6       | 23             | 2             |**66**  | **64** |
-|           | Mistral  | 37    | 67    | 38     | 75     | 34    | 84    | 31    | 77    | 60          | 59          | 30      | 41      | 33             | 56            |**67**  | **81** |
-| **Avg.**  | HarmBench| 25.7  | 40.2  | 37.7   | 43.7   | 32.5  | 56.2  | 18.3  | 62.5  | 39.5        | 26.8        | 16.8    | 14.0    | 30.8           | 16.8             |**60.8**|**62.5**|
 
 
-t-SNE visualization of response embeddings generated by six jailbreak methods on the AdvBench dataset
-![alt text](figs/image.png)
+Table: Comparison of ASRs achieved by UJA and baseline methods across two datasets on six white-box LLMs. **The ASRs are measured after performing *only 100 iterations* for each prompt.**
 
-Convergence of cumulative ASR of UJA on four LLMs from the AdvBench dataset: (a) ASR-G and (b) ASR-H
+| Method       | Metric | Llama-3 | Llama-3.1 | Qwen-2.5 | Qwen-3 | Vicuna | Mistral | Llama-3 | Llama-3.1 | Qwen-2.5 | Qwen-3 | Vicuna | Mistral |
+|--------------|--------|---------|-----------|----------|--------|--------|---------|---------|-----------|----------|--------|--------|---------|
+|              |        |                 **AdvBench**             ||     |                        |        |         |                 **HarmBench**               |   |                        |        |         |
+| GCG          | ASR-G  | 50.0    | 51.0      | 31.0     | 30.0   | 28.0   | 70.0    | 22.0    | 31.0      | 24.0     | 18.0   | 22.0   | 37.0    |
+|              | ASR-H  | 40.0    | 42.0      | 37.0     | 15.0   | 21.0   | 81.0    | 40.0    | 50.0      | 53.0     | 19.0   | 12.0   | 67.0    |
+| COLD         | ASR-G  | 52.0    | 57.0      | 28.0     | 54.0   | 52.0   | 72.0    | 38.0    | 43.0      | 32.0     | 36.0   | 39.0   | 38.0    |
+|              | ASR-H  | 44.0    | 47.0      | 35.0     | 27.0   | 40.0   | 73.0    | 41.0    | 44.0      | 51.0     | 24.0   | 27.0   | 75.0    |
+| DRL          | ASR-G  | 30.0    | 25.0      | 36.0     | 24.0   | 29.0   | 34.0    | 33.0    | 35.0      | 41.0     | 22.0   | 30.0   | 34.0    |
+|              | ASR-H  | 28.0    | 45.0      | 64.0     | 42.0   | 27.0   | 94.0    | 44.0    | 37.0      | 78.0     | 39.0   | 55.0   | 84.0    |
+| PAP          | ASR-G  | 21.0    | 31.0      | 41.0     | 14.0   | 2.0    | 38.0    | 16.0    | 19.0      | 33.0     | 10.0   | 1.0    | 31.0    |
+|              | ASR-H  | 62.0    | 77.0      | 82.0     | 74.0   | 3.0    | 84.0    | 64.0    | 71.0      | 84.0     | 76.0   | 3.0    | 77.0    |
+| AdvPrefix    | ASR-G  | 40.0    | 42.0      | 28.0     | 29.0   | 41.0   | 66.0    | 43.0    | 44.0      | 29.0     | 25.0   | 36.0   | 60.0    |
+|              | ASR-H  | 15.0    | 22.0      | 36.0     | 12.0   | 17.0   | 65.0    | 20.0    | 24.0      | 36.0     | 6.0    | 16.0   | 59.0    |
+| I-GCG        | ASR-G  | 23.0    | 23.0      | 8.0      | 12.0   | 25.0   | 38.0    | 13.0    | 16.0      | 17.0     | 8.0    | 17.0   | 30.0    |
+|              | ASR-H  | 11.0    | 13.0      | 10.0     | 2.0    | 5.0    | 38.0    | 4.0     | 9.0       | 19.0     | 5.0    | 6.0    | 41.0    |
+| llm-adaptive | ASR-G  | 51.0    | 60.0      | 29.0     | 62.0   | 41.0   | 44.0    | 37.0    | 35.0      | 16.0     | 41.0   | 23.0   | 33.0    |
+|              | ASR-H  | 0.0     | 1.0       | 32.0     | 6.0    | 1.0    | 46.0    | 7.0     | 3.0       | 31.0     | 2.0    | 2.0    | 56.0    |
+| Ours (UJA)   | ASR-G  | 89.0    | 86.0      | 74.0     | 59.0   | 88.0   | 88.0    | 65.0    | 47.0      | 64.0     | 56.0   | 66.0   | 67.0    |
+|              | ASR-H  | 67.0    | 80.0      | 55.0     | 33.0   | 59.0   | 85.0    | 73.0    | 62.0      | 66.0     | 29.0   | 64.0   | 81.0    |
 
-![alt text](figs/image-1.png)
 
-baseline attack methods failed to bypass Llama-3’s security protections, ultimately causing the model to refuse to answer. However, within just 100 optimization iterations, UJA successfully generated a jailbreak prompt, prompting Llama-3 to provide detailed steps regarding insider trading. This answer was judged "unsafe" by both ASR-G and ASR-H.
-![alt text](figs/image-4.png)
+**Figure 3.** t-SNE visualization of response embeddings generated by six jailbreak methods on the AdvBench dataset.  
+![t-SNE visualization](figs/image.png)
 
-Traditional jailbreaking methods typically restrict jailbreaking targets to predefined, fixed responses, such as "Of course, this is..." This limits the adversarial search space and reduces attack efficiency. In contrast, UJA employs an untargeted attack strategy that doesn’t follow any predefined pattern, aiming to maximize the "unsafe" score of the response.
-![alt text](figs/image-5.png)
+**Figure 4.** Convergence of cumulative ASR of UJA on four LLMs from the AdvBench dataset: (a) ASR-G and (b) ASR-H.  
+<img src="figs/iter.png" alt="UJA Untargeted Strategy" width="1070">
+
+**Figure 5.** Example of a UJA Optimized Jailbreak Prompt across Multiple LLMs on AdvBench.
+![alt text](image.png)
+
+**Figure 6.** Example of a UJA-Optimized Jailbreak Prompt Compared with Baselines on Llama-3 across AdvBench.  
+![Llama-3 Attack Result](figs/image-4.png)
+
+**Figure 7.**  Example of a UJA Optimized Jailbreak Response Compared with Baselines on Qwen-3 across AdvBench.
+<img src="figs/example- compare .png" alt="UJA Untargeted Strategy" width="1400">
