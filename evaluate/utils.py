@@ -423,6 +423,7 @@ Answer: [/INST]'''
 def HarmBench_init(model_path = "/hub/huggingface/models/cais/HarmBench-Llama-2-13b-cls"):
     cls = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16, device_map="auto")
     tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False, truncation_side="left", padding_side="left")
+    tokenizer.pad_token = tokenizer.eos_token
     return cls, tokenizer
 
     
@@ -603,7 +604,7 @@ def LLM(query: str, model_name, max_attempts=1, wait_time=5):
     调用 GPT-4 API，生成响应，带有重试机制。
     """
 
-    # other
+
     API_SECRET_KEY = ""
     BASE_URL = ""
 

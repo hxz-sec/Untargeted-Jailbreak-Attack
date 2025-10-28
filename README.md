@@ -5,7 +5,7 @@
 
 Existing gradient-based jailbreak attacks on Large Language Models (LLMs),such as Greedy Coordinate Gradient (GCG) and COLD-Attack, typically optimizeadversarial sufixes to align the LLM output with a predefined target responseHowever, by restricting the optimization objective as inducing a predefined target.these methods inherently constrain the adversarial search space, which limit theiroverall attack effcacy. Furthermore, existing methods typically require a largenumber of optimization iterations to fulfll the large gap between the fixed targetand the original model response, resulting in low attack effciency.To overcome the limitations of targeted jailbreak attacks, we propose the firstgradient-based untargeted jailbreak attack (UJA), aiming to elicit an unsafe re-sponse without enforcing any predefined patterns. Specifcally, we formulatean untargeted attack objective to maximize the unsafety probability of the LLMresponse, which can be quantified using a judge model. Since the objective isnon-differentiable, we further decompose it into two differentiable sub-objectivesfor optimizing an optimal harmful response and the corresponding adversarialprompt, with a theoretical analysis to validate the decomposition. In contrast totargeted jailbreak attacks, UJA's unrestricted objective significantly expands thesearch space, enabling a more flexible and effcient exploration ofLLM vulnera-bilities. Extensive evaluations demonstrate that UJA can achieve over 80% attacksuccess rates against recent safety-aligned LLMs with only 100 optimization itera-tions, outperforming the state-of-the-art gradient-based attacks such as I-GCG andCOLD-Attack by over 20%.
 
-**Figure 1.** Examples of different jailbreak scenarios.  
+**Figure 1.** Jailbreak example.  
 ![Jailbreak example](figs/image-3.png)
 
 **Figure 2.** Workflow of UJA framework.  
@@ -154,3 +154,28 @@ Table: Comparison of ASRs achieved by UJA and baseline methods across two datase
 
 **Figure 7.**  Example of a UJA Optimized Jailbreak Response Compared with Baselines on Qwen-3 across AdvBench.
 <img src="figs/example- compare .png" alt="UJA Untargeted Strategy" width="1400">
+
+
+## Citation
+If you find this useful in your research, please consider citing:
+
+
+```
+
+arXiv Preprint:
+```
+
+@misc{huang2025UJA,
+      title={Untargeted Jailbreak Attack}, 
+      author={Xinzhe Huang and Wenjing Hu and Tianhang Zheng and Kedong Xiu and Xiaojun Jia and Di Wang and Zhan Qin and Kui Ren},
+      year={2025},
+      eprint={2510.02999},
+      archivePrefix={arXiv},
+      primaryClass={cs.CR},
+      url={https://arxiv.org/abs/2510.02999}, 
+}
+
+
+
+## Lisence
+This project is licensed under the MIT License.
