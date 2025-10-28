@@ -93,18 +93,11 @@ Run the main code :
 conda activate ca2
 ```
 ```
-python scripts/main_split_gptfuzz.py
+python scripts/main.py
 ```
 Evaluate:
 ```
 python evaluate/evaluate.py 
-```
-
-Drawing:
-```
-python plot/asr_comparison_methods.py 
-python plot/attack_asr_comparison.py 
-python plot/response_diversity.py
 ```
 
 

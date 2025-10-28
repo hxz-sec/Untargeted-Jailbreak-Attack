@@ -35,8 +35,8 @@ def str2bool(v):
 def get_decode_args():
     parser = argparse.ArgumentParser()
 
-    # dataset_name = "advbench"
-    dataset_name = "harmBench"
+    dataset_name = "advbench"
+    # dataset_name = "harmBench"
 
     # model_name  = "llama-3-8B-Instruct"
     model_name  = "Qwen2.5-7B-Instruct"     
@@ -66,7 +66,7 @@ def get_decode_args():
 
     parser.add_argument("--generation-model", type=str, default=target_llm_path)
     parser.add_argument("--guard-model", type=str, default=guard_path)
-    parser.add_argument("--generation-device", type=int, default=3)
+    parser.add_argument("--generation-device", type=int, default=2)
     parser.add_argument("--guard-device", type=int, default=3)
     parser.add_argument("--dataset", type = str, default = f"/data/home/Xinzhe/GuardBreaker_CCS/data/csv/{dataset_name}_100.csv")
     parser.add_argument("--strategy", type = str, default = "suffix")
@@ -74,16 +74,16 @@ def get_decode_args():
     parser.add_argument("--micro-batch-size", type = int, default = 5, help = "The batch size for each question.")
     parser.add_argument("--suffix-length", type=int, default=20)
     parser.add_argument("--init-temp", type=float, default=1.0)
-    parser.add_argument("--num-iters", type=int, default=100)
+    parser.add_argument("--num-iters", type=int, default=25)
     parser.add_argument("--optim-lr", type=float, default=2.0)
     parser.add_argument("--sub-optim-lr", type=float, default=1.0)
     parser.add_argument("--logits-lr", type=float, default=0.01)
     parser.add_argument("--topk", type=int, default=10)
     parser.add_argument("--early-stop", type = str, default = "True")
     parser.add_argument("--minimum-score", type = float, default = 0.9)
-    parser.add_argument("--output-dir", type=str, default="/data/home/Xinzhe/Kedong/repos/Untarget/github/output/")
+    parser.add_argument("--output-dir", type=str, default="/data/home/Xinzhe/Kedong/repos/Untarget/github/test/")
     parser.add_argument("--max-response-length", type=int, default=30, help="Maximum number of tokens to generate in response")
-    parser.add_argument("--retry-amount", type=int, default=1, help="Maximum number of times to retry a question")
+    parser.add_argument("--retry-amount", type=int, default=4, help="Maximum number of times to retry a question")
     
     args = parser.parse_args()
     return args
@@ -205,7 +205,7 @@ def optimize_response(
                 best_response, best_score = response_txt, unsafe_score
                 guard_grad = logits_mat.grad.clone().detach()
                 
-        # 每50步打印进度s
+
         if step % 10 == 0 or step == max_steps:
             print(
                 f"[Step {step:03d}]  | "
@@ -224,19 +224,6 @@ def optimize_response(
 
 
 def create_token_mapping_matrix(guard_tokenId_list, generation_tokenId_list, guard_tokenizer, generation_tokenizer):
-    """
-    创建梯度映射矩阵，将generation tokens映射到对应的guard tokens
-    
-    参数:
-        guard_tokenId_list: guard模型的token ID列表
-        generation_tokenId_list: generation模型的token ID列表  
-        guard_tokenizer: guard模型的tokenizer
-        generation_tokenizer: generation模型的tokenizer
-    
-    返回:
-        Z: 映射矩阵，shape = (len(generation_tokenId_list), len(guard_tokenId_list))
-    """
-    
 
     guard_decoded_texts = []
     for token_id in guard_tokenId_list[0]:
@@ -470,8 +457,8 @@ def decode_suffix(
 
         print("raw guard_grad size:", guard_grad.size())
         print("grad_transfer size:", grad_natrix.size())
-        # generation_grad = torch.matmul(guard_grad, grad_natrix.to_dense()).to(generation_device)
-        generation_grad = torch.sparse.mm(guard_grad, grad_natrix).to(generation_device)
+        generation_grad = torch.matmul(guard_grad, grad_natrix.to_dense()).to(generation_device)
+        # generation_grad = torch.sparse.mm(guard_grad, grad_natrix).to(generation_device)
 
         print("generation_grad size", generation_grad.size())
         
@@ -622,7 +609,7 @@ def main():
         output_dir, 
         guard_path,
         model_path,
-        f"{dataset_name}_untarget_{guard_path}_example_rej_100.jsonl"
+        f"{dataset_name}_untarget_{guard_path}_100.jsonl"
     )
 
     exist_ids = []
