@@ -156,26 +156,6 @@ Table: Comparison of ASRs achieved by UJA and baseline methods across two datase
 <img src="figs/example- compare .png" alt="UJA Untargeted Strategy" width="1400">
 
 
-## Citation
-If you find this useful in your research, please consider citing:
-
-
-```
-
-arXiv Preprint:
-```
-
-@misc{huang2025UJA,
-      title={Untargeted Jailbreak Attack}, 
-      author={Xinzhe Huang and Wenjing Hu and Tianhang Zheng and Kedong Xiu and Xiaojun Jia and Di Wang and Zhan Qin and Kui Ren},
-      year={2025},
-      eprint={2510.02999},
-      archivePrefix={arXiv},
-      primaryClass={cs.CR},
-      url={https://arxiv.org/abs/2510.02999}, 
-}
-
-
 
 ## Lisence
 This project is licensed under the MIT License.
