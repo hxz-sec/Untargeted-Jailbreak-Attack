@@ -1585,16 +1585,10 @@ def model_forward_decoding(
 
 
 def model_forward_decoding_with_checkpoint(self, model, input_ids=None, input_embeddings=None, max_new_tokens=256):
-        """
-        利用梯度检查点，在保持梯度传播的前提下进行生成。
-        注意：仅支持单个样本（batch=1）。
-        """
+
 
         def generation_step(model, inputs_embeds, past):
-            """
-            单步生成，返回 logits 和新的 past_key_values
-            注意：这里不单独返回 next_token_embeds，由外层更新
-            """
+
             outputs = model(
                 inputs_embeds=inputs_embeds,
                 past_key_values=past,
@@ -2098,11 +2092,7 @@ def initialize(model, x, length, temperature):
 
 
 def response_logits_test(model, tokenizer, x, length, temperature):
-    """
-    生成 length 个 token，并返回：
-        logits_generated : 仅包含新增 token 的温度缩放后 logits
-        generated_text   : 仅包含新增 token 的字符串
-    """
+
     if x.dim() == 1:
         x = x.unsqueeze(0)
 
